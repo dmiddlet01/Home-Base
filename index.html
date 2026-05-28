@@ -13,21 +13,17 @@
         }
 
         :root {
-            /* Theme Base Colors - Dark Glass guarantees perfect contrast against any bright wallpaper */
             --bg-glass: rgba(10, 15, 30, 0.7);
             --bg-glass-hover: rgba(20, 30, 60, 0.85);
             --blur-strength: 18px;
             
-            /* Colored Border Accents (Each page has its signature neon highlight) */
-            --color-home: #38bdf8;    /* Cyber Cyan */
-            --color-about: #ec4899;   /* Hot Magenta */
-            --color-gallery: #a855f7; /* Electric Purple */
-            --color-etc: #10b981;     /* Emerald Green */
+            --color-home: #38bdf8;
+            --color-about: #ec4899;
+            --color-gallery: #a855f7;
+            --color-etc: #10b981;
             
-            /* Active accent color - changed dynamically by JS based on current page */
             --accent-active: var(--color-home);
             
-            /* Font Weights & Colors */
             --text-primary: #ffffff;
             --text-secondary: #cbd5e1;
             --text-muted: #94a3b8;
@@ -41,11 +37,9 @@
             display: flex;
             flex-direction: column;
             background-color: #030712;
+            touch-action: manipulation; /* Eliminates 300ms tap delay */
         }
 
-        /* BULLETPROOF FIXED BACKGROUND STRATEGY 
-           Forces background to stay completely static/fixed behind content across ALL mobile & desktop browsers.
-        */
         #bg-fixed-layer {
             position: fixed;
             top: 0;
@@ -58,10 +52,9 @@
             background-repeat: no-repeat;
             background-color: #030712;
             transition: background-image 0.8s ease-in-out;
-            transform: translate3d(0, 0, 0); /* Force GPU Acceleration */
+            /* Removed translate3d to prevent subpixel flickering */
         }
 
-        /* Glass Base Class */
         .glass-card {
             background: var(--bg-glass);
             backdrop-filter: blur(var(--blur-strength));
@@ -72,7 +65,6 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
-        /* Container Layout - Dynamic Columns */
         .app-container {
             width: 100%;
             max-width: 1400px;
@@ -83,21 +75,18 @@
             gap: 1.5rem;
             flex-grow: 1;
             align-content: start;
-            /* Bottom margin offset preventing content from being masked by floating elements */
             padding-bottom: 100px; 
         }
 
-        /* Responsive Breakpoints */
         @media (min-width: 1024px) {
             .app-container {
-                grid-template-columns: 1fr 340px; /* Two columns: Content left, Nav Card right */
+                grid-template-columns: 1fr 340px;
                 padding: 3rem 2rem;
                 gap: 2.5rem;
                 align-items: start;
             }
         }
 
-        /* Header Area */
         header {
             width: 100%;
             max-width: 1400px;
@@ -145,7 +134,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Wall Info Box */
         .wallpaper-info {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -159,7 +147,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Nav Drawer / Card Layout CSS Rules */
         .nav-card {
             border: 1.5px solid var(--accent-active);
             display: flex;
@@ -169,28 +156,29 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 255, 255, 0.05);
         }
 
-        /* MOBILE PORTAL VIEW NAVIGATION (Animated Bottom Sheet Pop-up) */
         @media (max-width: 1023.98px) {
             .nav-card {
                 position: fixed;
                 bottom: 0;
                 left: 0;
                 right: 0;
-                z-index: 1010; /* Above overlay backdrop */
+                z-index: 1010;
                 border-bottom-left-radius: 0;
                 border-bottom-right-radius: 0;
                 border-top: 2px solid var(--accent-active);
                 border-left: none;
                 border-right: none;
-                transform: translateY(105%); /* Completely off-screen below viewport */
+                transform: translateY(105%);
                 padding: 2rem 1.5rem 2.5rem 1.5rem;
-                pointer-events: none; /* Block interactions when closed */
+                pointer-events: none;
+                max-height: 85vh;
+                overflow-y: auto;
             }
 
             .nav-card.mobile-open {
-                transform: translateY(0); /* Pop-up transition */
+                transform: translateY(0);
                 box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
-                pointer-events: auto; /* Enable touch controls when active */
+                pointer-events: auto;
             }
         }
         
@@ -207,7 +195,6 @@
             align-items: center;
         }
 
-        /* Drag handle line on top of bottom sheet (mobile only) */
         .mobile-drag-handle {
             display: none;
         }
@@ -219,10 +206,10 @@
                 background: rgba(255, 255, 255, 0.3);
                 border-radius: 9999px;
                 margin: -1rem auto 1rem auto;
+                flex-shrink: 0;
             }
         }
 
-        /* Darkening backdrop behind bottom sheet on mobile */
         .nav-backdrop {
             display: block;
             position: fixed;
@@ -233,23 +220,20 @@
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s ease;
-            pointer-events: none; /* Allow click-throughs when inactive */
+            pointer-events: none;
         }
 
         .nav-backdrop.active {
             opacity: 1;
-            pointer-events: auto; /* Catch taps to close when open */
+            pointer-events: auto;
         }
 
-        /* MORPHING HAMBURGER BUTTON
-           Persistent floating navigation toggle on mobile 
-        */
         .mobile-nav-trigger {
             display: none;
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            z-index: 1020; /* Keep above the backdrop and navigation sheet */
+            z-index: 1020;
             width: 56px;
             height: 56px;
             border-radius: 50%;
@@ -277,7 +261,6 @@
             transform: scale(0.9);
         }
 
-        /* Animated hamburger bars inside floating trigger */
         .hamburger-icon {
             width: 20px;
             height: 14px;
@@ -296,7 +279,6 @@
             transform-origin: center;
         }
 
-        /* Morphing transitions */
         .mobile-nav-trigger.open .bar-top {
             transform: translateY(6px) rotate(135deg);
             background-color: var(--accent-active);
@@ -318,7 +300,6 @@
             gap: 0.75rem;
         }
 
-        /* Interactive Navigation Links */
         .nav-link {
             display: flex;
             align-items: center;
@@ -336,15 +317,16 @@
             position: relative;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .nav-link svg {
             width: 20px;
             height: 20px;
             transition: transform 0.25s ease;
+            flex-shrink: 0;
         }
 
-        /* Hover states with individual accent lines */
         .nav-link[data-tab="home"]:hover {
             border-color: var(--color-home);
             color: #ffffff;
@@ -370,7 +352,6 @@
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
         }
 
-        /* Active Navigation States */
         .nav-link.active[data-tab="home"] {
             background: rgba(56, 189, 248, 0.15);
             border-color: var(--color-home);
@@ -396,7 +377,6 @@
             font-weight: 700;
         }
 
-        /* Navigation Icon Badge Counter */
         .nav-badge {
             margin-left: auto;
             font-size: 0.75rem;
@@ -405,9 +385,9 @@
             background: rgba(255, 255, 255, 0.1);
             color: var(--text-secondary);
             border: 1px solid rgba(255, 255, 255, 0.15);
+            flex-shrink: 0;
         }
 
-        /* Main Content Viewport */
         main {
             display: flex;
             flex-direction: column;
@@ -417,7 +397,6 @@
             z-index: 5;
         }
 
-        /* Panel Wrapper & Dynamic Transitions */
         .panel {
             display: none;
             opacity: 0;
@@ -434,7 +413,6 @@
             transform: translateY(0);
         }
 
-        /* Text and Typography Styling */
         h1 {
             font-size: 2rem;
             font-weight: 800;
@@ -459,7 +437,6 @@
             line-height: 1.6;
         }
 
-        /* Decorative Grid Layouts inside Content */
         .card-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -471,7 +448,6 @@
             }
         }
 
-        /* Sub-cards inside Panels */
         .feature-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -500,7 +476,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Digital Clock Widget */
         .widget-row {
             display: flex;
             flex-wrap: wrap;
@@ -524,11 +499,11 @@
             font-weight: 700;
             font-family: monospace, ui-monospace;
             letter-spacing: 0.05em;
-            color: var(--color-home);
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+            color: var(--accent-active); /* Fixed: Now follows active accent */
+            text-shadow: 0 0 10px var(--accent-active);
+            transition: color 0.4s ease, text-shadow 0.4s ease;
         }
 
-        /* Custom controls inside ETC tab for Customizing aesthetics */
         .control-group {
             display: flex;
             flex-direction: column;
@@ -564,7 +539,6 @@
             transition: all 0.2s ease;
         }
 
-        /* Button Styling */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -586,7 +560,6 @@
             box-shadow: 0 0 15px var(--accent-active);
         }
 
-        /* Gallery tab Specific Grid layout */
         .gallery-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -611,6 +584,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.05); /* Placeholder bg while loading */
         }
         .gallery-item:hover {
             transform: translateY(-4px) scale(1.02);
@@ -623,6 +597,7 @@
             height: 100%;
             object-fit: cover;
             transition: filter 0.4s ease;
+            display: block;
         }
         
         .gallery-overlay {
@@ -652,15 +627,15 @@
             font-weight: 800;
         }
 
-        /* Custom alert notification system */
         .toast-container {
             position: fixed;
             bottom: 1.5rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1050; /* Topmost stack element */
+            z-index: 1050;
             width: calc(100% - 3rem);
             max-width: 400px;
+            pointer-events: none; /* Let clicks pass through when hidden */
         }
 
         .toast {
@@ -677,6 +652,7 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.3s ease;
+            pointer-events: auto;
         }
 
         .toast.show {
@@ -684,7 +660,6 @@
             transform: translateY(0);
         }
 
-        /* Beautiful footer alignment */
         footer {
             width: 100%;
             max-width: 1400px;
@@ -701,38 +676,41 @@
                 padding: 2rem;
             }
         }
+
+        /* Image error state */
+        .img-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Static Absolute Layer holding Wallpaper and safeguarding scroll behavior -->
     <div id="bg-fixed-layer"></div>
 
-    <!-- Top Branding & Dynamic Header -->
     <header>
         <div class="glass-card header-content">
             <div class="logo-group">
-                <!-- Glowing Dynamic SVG Logo -->
                 <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l8.982-11.795H14.19C15.19 5.86 19.522 1.54 19.783 1.293c.125-.125.125-.328 0-.453-.125-.125-.328-.125-.453 0L10.348 9.813H14l-9 11.795h5.813z" />
                 </svg>
                 <div class="logo-title" id="logoText">NEXUS PORTAL</div>
             </div>
-            <!-- Interactive background label -->
             <div class="wallpaper-info" id="wallpaperLabel">Connecting to Bing Daily Wallpaper...</div>
         </div>
     </header>
 
-    <!-- Overlay Backdrop for Mobile Drawer -->
     <div class="nav-backdrop" id="drawerBackdrop"></div>
 
-    <!-- Unified Master Layout Grid -->
     <div class="app-container">
 
-        <!-- Left Side: Interactive Dynamic Display Panels -->
         <main>
             
-            <!-- PANEL 1: HOME -->
             <section id="panel-home" class="glass-card panel active">
                 <div class="widget-row">
                     <div class="time-widget">
@@ -784,7 +762,6 @@
                 </div>
             </section>
 
-            <!-- PANEL 2: ABOUT -->
             <section id="panel-about" class="glass-card panel">
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
                     <div class="feature-icon-wrapper" style="color: var(--color-about); background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.2);">
@@ -820,7 +797,6 @@
                 </div>
             </section>
 
-            <!-- PANEL 3: GALLERY -->
             <section id="panel-gallery" class="glass-card panel">
                 <div>
                     <h1>Visual Showcases</h1>
@@ -830,27 +806,33 @@
                 </div>
 
                 <div class="gallery-grid">
-                    <!-- Gallery Item 1 -->
                     <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=600&auto=format&fit=crop" alt="Cyber Grid" class="gallery-img">
+                        <img src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=600&auto=format&fit=crop" 
+                             alt="Cyber Grid" 
+                             class="gallery-img"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML += '<div class=\'img-error\'>Image unavailable</div>';">
                         <div class="gallery-overlay">
                             <span class="gallery-tag">Synthetics</span>
                             <h4 class="gallery-title">Aether Stream</h4>
                         </div>
                     </div>
                     
-                    <!-- Gallery Item 2 -->
                     <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" alt="Constellation Network" class="gallery-img">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" 
+                             alt="Constellation Network" 
+                             class="gallery-img"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML += '<div class=\'img-error\'>Image unavailable</div>';">
                         <div class="gallery-overlay">
                             <span class="gallery-tag">Networks</span>
                             <h4 class="gallery-title">Nodal Hubs</h4>
                         </div>
                     </div>
 
-                    <!-- Gallery Item 3 -->
                     <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?q=80&w=600&auto=format&fit=crop" alt="Abstract Monolith" class="gallery-img">
+                        <img src="https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?q=80&w=600&auto=format&fit=crop" 
+                             alt="Abstract Monolith" 
+                             class="gallery-img"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML += '<div class=\'img-error\'>Image unavailable</div>';">
                         <div class="gallery-overlay">
                             <span class="gallery-tag">Architect</span>
                             <h4 class="gallery-title">Monolith Frame</h4>
@@ -865,7 +847,6 @@
                 </div>
             </section>
 
-            <!-- PANEL 4: ETC (Aesthetic Customizer Widget) -->
             <section id="panel-etc" class="glass-card panel">
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
                     <div class="feature-icon-wrapper" style="color: var(--color-etc); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">
@@ -918,10 +899,8 @@ border: 1.5px solid var(--accent-active);</pre>
 
         </main>
 
-        <!-- Right Side: Sticky Navigation Sidebar / Morphing Bottom Drawer -->
         <aside>
             <nav class="glass-card nav-card" id="navigationCard">
-                <!-- Mobile indicator bar -->
                 <div class="mobile-drag-handle"></div>
                 
                 <div class="nav-card-title">
@@ -929,7 +908,7 @@ border: 1.5px solid var(--accent-active);</pre>
                 </div>
                 
                 <div class="nav-menu">
-                    <a class="nav-link active" data-tab="home">
+                    <a class="nav-link active" data-tab="home" role="button" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
@@ -937,7 +916,7 @@ border: 1.5px solid var(--accent-active);</pre>
                         <span class="nav-badge" style="border-color: rgba(56, 189, 248, 0.3); color: var(--color-home);">Active</span>
                     </a>
 
-                    <a class="nav-link" data-tab="about">
+                    <a class="nav-link" data-tab="about" role="button" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                         </svg>
@@ -945,7 +924,7 @@ border: 1.5px solid var(--accent-active);</pre>
                         <span class="nav-badge">Core</span>
                     </a>
 
-                    <a class="nav-link" data-tab="gallery">
+                    <a class="nav-link" data-tab="gallery" role="button" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
@@ -953,7 +932,7 @@ border: 1.5px solid var(--accent-active);</pre>
                         <span class="nav-badge" id="galleryCount">3</span>
                     </a>
 
-                    <a class="nav-link" data-tab="etc">
+                    <a class="nav-link" data-tab="etc" role="button" tabindex="0">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -967,7 +946,6 @@ border: 1.5px solid var(--accent-active);</pre>
 
     </div>
 
-    <!-- Mobile Navigation Summon Trigger (Morphing Hamburger Button) -->
     <button class="mobile-nav-trigger" id="mobileToggleBtn" aria-label="Toggle Menu">
         <div class="hamburger-icon">
             <span class="bar bar-top"></span>
@@ -976,7 +954,6 @@ border: 1.5px solid var(--accent-active);</pre>
         </div>
     </button>
 
-    <!-- Self-Contained Diagnostic Toast Notifications -->
     <div class="toast-container">
         <div class="toast" id="systemToast">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: var(--accent-active);" id="toastIcon">
@@ -986,17 +963,14 @@ border: 1.5px solid var(--accent-active);</pre>
         </div>
     </div>
 
-    <!-- Footer Meta Info -->
     <footer>
         <p>&copy; 2026 Nexus Portal Engine. Single-Page Architecture. Engineered with vanilla technology.</p>
     </footer>
 
-    <!-- Vanilla Client Engine -->
     <script>
-        // Store current fetched wallpaper URL for reference
         let activeBingUrl = "";
+        let toastTimeout;
 
-        // Wait for DOM setup to begin initialization loops
         document.addEventListener('DOMContentLoaded', () => {
             initClock();
             initRouter();
@@ -1004,7 +978,6 @@ border: 1.5px solid var(--accent-active);</pre>
             fetchBingWallpaper();
         });
 
-        // 1. Digital Clock loop (Updates hours, minutes, seconds)
         function initClock() {
             const clockEl = document.getElementById('currentTime');
             const updateClock = () => {
@@ -1018,7 +991,6 @@ border: 1.5px solid var(--accent-active);</pre>
             setInterval(updateClock, 1000);
         }
 
-        // 2. High-Performance Zero-Dependency Router
         function initRouter() {
             const navLinks = document.querySelectorAll('.nav-link');
             const panels = document.querySelectorAll('.panel');
@@ -1026,29 +998,29 @@ border: 1.5px solid var(--accent-active);</pre>
 
             navLinks.forEach(link => {
                 const handleSelection = (e) => {
-                    // Prevent any multiple touch handler firings
+                    e.preventDefault();
                     e.stopPropagation();
 
                     const targetTab = link.getAttribute('data-tab');
                     
-                    // Update Active states on Navigation Card buttons
                     navLinks.forEach(item => {
                         item.classList.remove('active');
                         const badge = item.querySelector('.nav-badge');
-                        if (badge) {
-                            if (item.getAttribute('data-tab') === 'home') {
-                                badge.textContent = 'Core';
-                                badge.style.color = '';
-                                badge.style.borderColor = '';
-                            } else if (item.getAttribute('data-tab') === 'etc') {
-                                badge.textContent = 'Lab';
-                                badge.style.color = '';
-                                badge.style.borderColor = '';
-                            } else if (item.getAttribute('data-tab') === 'gallery') {
-                                badge.textContent = '3';
-                            } else {
-                                badge.textContent = 'Core';
-                            }
+                        if (!badge) return;
+                        
+                        const tab = item.getAttribute('data-tab');
+                        if (tab === 'home') {
+                            badge.textContent = 'Core';
+                            badge.style.color = '';
+                            badge.style.borderColor = '';
+                        } else if (tab === 'etc') {
+                            badge.textContent = 'Lab';
+                            badge.style.color = '';
+                            badge.style.borderColor = '';
+                        } else if (tab === 'gallery') {
+                            badge.textContent = '3';
+                        } else {
+                            badge.textContent = 'Core';
                         }
                     });
 
@@ -1071,41 +1043,43 @@ border: 1.5px solid var(--accent-active);</pre>
                         }
                     }
 
-                    // Dynamically map CSS global accent variables to smooth color transitions
                     root.style.setProperty('--accent-active', `var(--color-${targetTab})`);
 
-                    // Fade-out previous panel, instantly mount new panel with sliding entry
-                    panels.forEach(panel => {
-                        panel.classList.remove('active');
-                    });
+                    panels.forEach(panel => panel.classList.remove('active'));
 
                     const activePanel = document.getElementById(`panel-${targetTab}`);
                     if (activePanel) {
                         activePanel.classList.add('active');
                     }
 
-                    // On Mobile: auto-dismiss the bottom drawer on choice selection
-                    closeMobileMenu();
+                    // Defer mobile menu close to prevent event collision with backdrop
+                    requestAnimationFrame(() => {
+                        closeMobileMenu();
+                    });
 
-                    // Send Toast Update on view switches
                     triggerNotification(`Mounted view: ${targetTab.toUpperCase()}`);
                 };
 
-                // Add both touch and click listener support to verify instantaneous mobile reaction
+                // Only bind click — touch-action: manipulation handles mobile latency
                 link.addEventListener('click', handleSelection);
-                link.addEventListener('touchend', handleSelection);
+                
+                // Keyboard accessibility
+                link.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleSelection(e);
+                    }
+                });
             });
         }
 
-        // 3. Mobile Animated Morphing Toggle Controls & Bottom Drawer
         function initMobileDrawer() {
             const toggleBtn = document.getElementById('mobileToggleBtn');
             const backdrop = document.getElementById('drawerBackdrop');
-            const navCard = document.getElementById('navigationCard');
 
             const toggleMenu = (e) => {
                 if (e) e.stopPropagation();
-                
+                const navCard = document.getElementById('navigationCard');
                 const isOpen = navCard.classList.contains('mobile-open');
                 if (isOpen) {
                     closeMobileMenu();
@@ -1114,22 +1088,29 @@ border: 1.5px solid var(--accent-active);</pre>
                 }
             };
 
-            const openMobileMenu = () => {
-                backdrop.classList.add('active');
-                navCard.classList.add('mobile-open');
-                toggleBtn.classList.add('open');
-                document.body.style.overflow = 'hidden'; // Lock body scroll behind drawer
-            };
-
-            // Bind events supporting immediate touch starts
             toggleBtn.addEventListener('click', toggleMenu);
             backdrop.addEventListener('click', closeMobileMenu);
-            backdrop.addEventListener('touchstart', closeMobileMenu);
+            
+            // Prevent backdrop touch from propagating to body
+            backdrop.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                closeMobileMenu();
+            }, { passive: false });
 
-            // Close with ESC key for quick desktop debugging
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') closeMobileMenu();
             });
+        }
+
+        function openMobileMenu() {
+            const backdrop = document.getElementById('drawerBackdrop');
+            const navCard = document.getElementById('navigationCard');
+            const toggleBtn = document.getElementById('mobileToggleBtn');
+
+            backdrop.classList.add('active');
+            navCard.classList.add('mobile-open');
+            toggleBtn.classList.add('open');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeMobileMenu() {
@@ -1141,11 +1122,10 @@ border: 1.5px solid var(--accent-active);</pre>
                 backdrop.classList.remove('active');
                 navCard.classList.remove('mobile-open');
                 toggleBtn.classList.remove('open');
-                document.body.style.overflow = ''; // Restore standard body scroll
+                document.body.style.overflow = '';
             }
         }
 
-        // 4. Robust CORS-enabled Bing Wallpaper fetch with fallback
         async function fetchBingWallpaper() {
             const infoLabel = document.getElementById('wallpaperLabel');
             const bgLayer = document.getElementById('bg-fixed-layer');
@@ -1153,7 +1133,13 @@ border: 1.5px solid var(--accent-active);</pre>
             const fallbackWallpaper = 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1920&auto=format&fit=crop';
 
             try {
-                const response = await fetch(bingApiUrl);
+                // Add timeout to prevent hanging on slow networks
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch(bingApiUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
                 if (!response.ok) throw new Error("CORS or Endpoint unavailable");
                 
                 const data = await response.json();
@@ -1177,7 +1163,6 @@ border: 1.5px solid var(--accent-active);</pre>
             }
         }
 
-        // 5. Custom Wallpaper Quick Changer (For aesthetic playground)
         function setCustomWallpaper(theme) {
             const bgLayer = document.getElementById('bg-fixed-layer');
             let selectedUrl = "";
@@ -1209,7 +1194,6 @@ border: 1.5px solid var(--accent-active);</pre>
             }
         }
 
-        // 6. Live CSS Glass aesthetic variable engine
         function updateAesthetics() {
             const blurVal = document.getElementById('slider-blur').value;
             const opacityVal = document.getElementById('slider-opacity').value / 100;
@@ -1222,21 +1206,34 @@ border: 1.5px solid var(--accent-active);</pre>
 
             const codeOutput = document.getElementById('code-output');
             codeOutput.textContent = `background: rgba(10, 15, 30, ${opacityVal});\nbackdrop-filter: blur(${blurVal}px);\nborder: 1.5px solid var(--accent-active);`;
+            
+            // Force reflow on sliders to ensure WebKit picks up accent color change on pseudo-elements
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(s => {
+                s.style.display = 'none';
+                s.offsetHeight; // Trigger reflow
+                s.style.display = '';
+            });
         }
 
-        // 7. Custom safe toast notifications
-        let toastTimeout;
         function triggerNotification(message) {
             const toast = document.getElementById('systemToast');
             const text = document.getElementById('toastText');
             
-            clearTimeout(toastTimeout);
-            text.textContent = message;
-            toast.classList.add('show');
+            // Reset immediately if already showing
+            toast.classList.remove('show');
             
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            // Small delay to allow CSS transition reset
+            clearTimeout(toastTimeout);
+            
+            requestAnimationFrame(() => {
+                text.textContent = message;
+                toast.classList.add('show');
+                
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            });
         }
     </script>
 </body>
