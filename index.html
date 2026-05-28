@@ -1,10 +1,1181 @@
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My First GitHub Site</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Glass Portal</title>
+    <style>
+        /* CSS Reset & Variable Tokens */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* Theme Base Colors - Dark Glass guarantees perfect contrast against any bright wallpaper */
+            --bg-glass: rgba(10, 15, 30, 0.65);
+            --bg-glass-hover: rgba(20, 30, 60, 0.8);
+            --blur-strength: 16px;
+            
+            /* Colored Border Accents (Each page has its signature neon highlight) */
+            --color-home: #38bdf8;    /* Cyber Cyan */
+            --color-about: #ec4899;   /* Hot Magenta */
+            --color-gallery: #a855f7; /* Electric Purple */
+            --color-etc: #10b981;     /* Emerald Green */
+            
+            /* Active accent color - changed dynamically by JS based on current page */
+            --accent-active: var(--color-home);
+            
+            /* Font Weights & Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: #030712;
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            
+            /* CRITICAL FIX: Forces background to stay completely static/fixed while page content scrolls */
+            background-attachment: fixed;
+            
+            transition: background-image 0.8s ease-in-out;
+        }
+
+        /* Glass Base Class */
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(var(--blur-strength));
+            -webkit-backdrop-filter: blur(var(--blur-strength));
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        /* Container Layout - Dynamic Columns */
+        .app-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            flex-grow: 1;
+            align-content: start;
+            /* Extra bottom spacing on mobile to prevent content being blocked by the persistent mobile launch button */
+            padding-bottom: 80px; 
+        }
+
+        /* Responsive Breakpoints */
+        @media (min-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr 340px; /* Two columns: Content left, Nav Card right */
+                padding: 3rem 2rem;
+                gap: 2.5rem;
+                align-items: start;
+            }
+        }
+
+        /* Header Area */
+        header {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 1.5rem 0 1.5rem;
+        }
+        @media (min-width: 1024px) {
+            header {
+                padding: 3rem 2rem 0 2rem;
+            }
+        }
+
+        .header-content {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-active);
+            transition: color 0.3s ease;
+        }
+
+        .logo-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ffffff, var(--accent-active));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        /* Wall Info Box */
+        .wallpaper-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Nav Drawer / Card Layout CSS Rules */
+        .nav-card {
+            border: 1.5px solid var(--accent-active);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 255, 255, 0.05);
+        }
+
+        /* MOBILE PORTAL VIEW NAVIGATION (Animated Bottom Sheet Pop-up) */
+        @media (max-width: 1023.98px) {
+            .nav-card {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+                border-top: 2px solid var(--accent-active);
+                border-left: none;
+                border-right: none;
+                transform: translateY(105%); /* Hidden below viewport */
+                padding: 2rem 1.5rem 2.5rem 1.5rem;
+            }
+
+            .nav-card.mobile-open {
+                transform: translateY(0); /* Pop-up transition */
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+            }
+        }
+        
+        .nav-card-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Drag handle line on top of bottom sheet (mobile only) */
+        .mobile-drag-handle {
+            display: none;
+        }
+        @media (max-width: 1023.98px) {
+            .mobile-drag-handle {
+                display: block;
+                width: 40px;
+                height: 5px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 9999px;
+                margin: -1rem auto 1rem auto;
+            }
+        }
+
+        /* Overlay blur backdrop behind bottom sheet on mobile */
+        .nav-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .nav-backdrop.active {
+            display: block;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Persistent floating navigation summon button on mobile */
+        .mobile-nav-trigger {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 900;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            border: 1.5px solid var(--accent-active);
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 1023.98px) {
+            .mobile-nav-trigger {
+                display: flex;
+            }
+        }
+
+        .mobile-nav-trigger:active {
+            transform: scale(0.9);
+        }
+
+        /* Close Button inside drawer for clear mobile exit utility */
+        .drawer-close-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+        @media (max-width: 1023.98px) {
+            .drawer-close-btn {
+                display: block;
+            }
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Interactive Navigation Links */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.25s ease;
+        }
+
+        /* Hover states with individual accent lines */
+        .nav-link[data-tab="home"]:hover {
+            border-color: var(--color-home);
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.1);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+        }
+        .nav-link[data-tab="about"]:hover {
+            border-color: var(--color-about);
+            color: #ffffff;
+            background: rgba(236, 72, 153, 0.1);
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.15);
+        }
+        .nav-link[data-tab="gallery"]:hover {
+            border-color: var(--color-gallery);
+            color: #ffffff;
+            background: rgba(168, 85, 247, 0.1);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.15);
+        }
+        .nav-link[data-tab="etc"]:hover {
+            border-color: var(--color-etc);
+            color: #ffffff;
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+        }
+
+        /* Active Navigation States */
+        .nav-link.active[data-tab="home"] {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--color-home);
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .nav-link.active[data-tab="about"] {
+            background: rgba(236, 72, 153, 0.15);
+            border-color: var(--color-about);
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .nav-link.active[data-tab="gallery"] {
+            background: rgba(168, 85, 247, 0.15);
+            border-color: var(--color-gallery);
+            color: #ffffff;
+            font-weight: 700;
+        }
+        .nav-link.active[data-tab="etc"] {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--color-etc);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Navigation Icon Badge Counter */
+        .nav-badge {
+            margin-left: auto;
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Main Content Viewport */
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        /* Panel Wrapper & Dynamic Transitions */
+        .panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            flex-direction: column;
+            gap: 1.5rem;
+            border: 1.5px solid var(--accent-active);
+        }
+
+        .panel.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Text and Typography Styling */
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.75rem;
+            }
+        }
+
+        .lead-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        p {
+            font-size: 0.975rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Decorative Grid Layouts inside Content */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Sub-cards inside Panels */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: all 0.25s ease;
+        }
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+            border-color: var(--accent-active);
+        }
+
+        .feature-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-active);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Digital Clock Widget */
+        .widget-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .time-widget {
+            flex-grow: 1;
+            min-width: 200px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .clock-display {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: monospace, ui-monospace;
+            letter-spacing: 0.05em;
+            color: var(--color-home);
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Custom controls inside ETC tab for Customizing aesthetics */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-active);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--accent-active);
+            transition: all 0.2s ease;
+        }
+
+        /* Button Styling */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--accent-active);
+            color: #030712;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 0 15px var(--accent-active);
+        }
+
+        /* Gallery tab Specific Grid layout */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1200px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 16 / 10;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gallery-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: var(--color-gallery);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(168, 85, 247, 0.25);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.4s ease;
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 15, 30, 0.9) 0%, rgba(10, 15, 30, 0.2) 60%, transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.25rem;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .gallery-tag {
+            font-size: 0.75rem;
+            color: var(--color-gallery);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+        }
+
+        /* Custom alert notification system */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1010; /* Above mobile sheet */
+            width: calc(100% - 3rem);
+            max-width: 400px;
+        }
+
+        .toast {
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid var(--accent-active);
+            border-radius: 12px;
+            padding: 1rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Beautiful footer alignment */
+        footer {
+            width: 100%;
+            max-width: 1400px;
+            margin: auto auto 0 auto;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        @media (min-width: 1024px) {
+            footer {
+                padding: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>Back at it since 1998, but smoother this time.</p>
+
+    <!-- Top Branding & Dynamic Header -->
+    <header>
+        <div class="glass-card header-content">
+            <div class="logo-group">
+                <!-- Glowing Dynamic SVG Logo -->
+                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l8.982-11.795H14.19C15.19 5.86 19.522 1.54 19.783 1.293c.125-.125.125-.328 0-.453-.125-.125-.328-.125-.453 0L10.348 9.813H14l-9 11.795h5.813z" />
+                </svg>
+                <div class="logo-title" id="logoText">NEXUS PORTAL</div>
+            </div>
+            <!-- Interactive background label -->
+            <div class="wallpaper-info" id="wallpaperLabel">Connecting to Bing Daily Wallpaper...</div>
+        </div>
+    </header>
+
+    <!-- Overlay Backdrop for Mobile Drawer -->
+    <div class="nav-backdrop" id="drawerBackdrop"></div>
+
+    <!-- Unified Master Layout Grid -->
+    <div class="app-container">
+
+        <!-- Left Side: Interactive Dynamic Display Panels -->
+        <main>
+            
+            <!-- PANEL 1: HOME -->
+            <section id="panel-home" class="glass-card panel active">
+                <div class="widget-row">
+                    <div class="time-widget">
+                        <span class="text-secondary" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase;">Aesthetic Chrono</span>
+                        <div class="clock-display" id="currentTime">00:00:00</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <h1>Welcome to your self-contained immersive experience</h1>
+                    <p class="lead-text">
+                        A pristine showcase of glassmorphism. This entire page operates seamlessly within one single, hyper-optimized HTML file without requiring external frameworks.
+                    </p>
+                    <p>
+                        The background image is configured to remain perfectly fixed, allowing content to float above it on scroll without creating distracting image motion. On desktop layouts, your directory remains anchored on the right. On mobile devices, the directory transforms seamlessly into an animated bottom sheet drawer, accessible via a floating action trigger.
+                    </p>
+                </div>
+
+                <div class="card-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                        </div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700;">Bing Engine Connected</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">
+                            The script dynamically targets public endpoints to load the picture of the day, with a high-fidelity alternative backup as immediate fail-safes.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700;">Mobile Sheet Physics</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">
+                            The slide-up layout uses responsive CSS rules to morph into an elegant sliding modal panel, perfect for one-handed thumb interaction.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 0.5rem;">
+                    <button class="btn" onclick="triggerNotification('Welcome to the Glass Portal! Use the sidebar navigation to discover modules.')">
+                        Quick Diagnostics
+                    </button>
+                </div>
+            </section>
+
+            <!-- PANEL 2: ABOUT -->
+            <section id="panel-about" class="glass-card panel">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="feature-icon-wrapper" style="color: var(--color-about); background: rgba(236, 72, 153, 0.1); border-color: rgba(236, 72, 153, 0.2);">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h1>Architecture & Specifications</h1>
+                    <p class="lead-text">
+                        A design philosophy prioritizing structural elegance, low payload, and absolute autonomy.
+                    </p>
+                    <p>
+                        This portal is constructed as a modern single-page-app container. By avoiding heavy libraries (such as Bootstrap, Tailwind, or React), it features direct stylesheet interpretation with sub-millisecond layout passes.
+                    </p>
+                </div>
+
+                <div class="card-grid">
+                    <div class="feature-card">
+                        <span style="font-size: 0.75rem; color: var(--color-about); font-weight: 800; text-transform: uppercase;">CSS Architecture</span>
+                        <h4 style="font-size: 1.05rem; font-weight: 700;">Backdrop Filters</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">
+                            Uses modern hardware-accelerated filters to produce the elegant Frosted Glass surface effect, overlaying background details beautifully.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <span style="font-size: 0.75rem; color: var(--color-about); font-weight: 800; text-transform: uppercase;">JavaScript Engine</span>
+                        <h4 style="font-size: 1.05rem; font-weight: 700;">Zero-Dependency Router</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">
+                            Utilizes lightweight data-attributes to instantly handle section switching and variable dynamic style updates in real-time.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL 3: GALLERY -->
+            <section id="panel-gallery" class="glass-card panel">
+                <div>
+                    <h1>Visual Showcases</h1>
+                    <p class="lead-text">
+                        A curated selection of architecture and tech perspectives highlighting the contrast of neon glass details.
+                    </p>
+                </div>
+
+                <div class="gallery-grid">
+                    <!-- Gallery Item 1 -->
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=600&auto=format&fit=crop" alt="Cyber Grid" class="gallery-img">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Synthetics</span>
+                            <h4 class="gallery-title">Aether Stream</h4>
+                        </div>
+                    </div>
+                    
+                    <!-- Gallery Item 2 -->
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" alt="Constellation Network" class="gallery-img">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Networks</span>
+                            <h4 class="gallery-title">Nodal Hubs</h4>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Item 3 -->
+                    <div class="gallery-item">
+                        <img src="https://images.unsplash.com/photo-1484557052118-f32bd25b45b5?q=80&w=600&auto=format&fit=crop" alt="Abstract Monolith" class="gallery-img">
+                        <div class="gallery-overlay">
+                            <span class="gallery-tag">Architect</span>
+                            <h4 class="gallery-title">Monolith Frame</h4>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Images courtesy of Unsplash, loaded on-demand inside our isolated components.
+                    </p>
+                </div>
+            </section>
+
+            <!-- PANEL 4: ETC (Aesthetic Customizer Widget) -->
+            <section id="panel-etc" class="glass-card panel">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="feature-icon-wrapper" style="color: var(--color-etc); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                    </div>
+                    <h1>Live Glass Customizer</h1>
+                    <p class="lead-text">
+                        A real-time playground built specifically for creators and designers to inspect CSS rendering limits.
+                    </p>
+                </div>
+
+                <div class="glass-card" style="border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Backdrop Blur Filter</span>
+                            <span id="blur-val">16px</span>
+                        </div>
+                        <input type="range" id="slider-blur" min="0" max="40" value="16" step="1" oninput="updateAesthetics()">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Glass Overlay Opacity</span>
+                            <span id="opacity-val">0.65</span>
+                        </div>
+                        <input type="range" id="slider-opacity" min="10" max="95" value="65" step="5" oninput="updateAesthetics()">
+                    </div>
+                    
+                    <div class="control-group" style="gap: 0.75rem;">
+                        <span class="control-label">Wallpaper Quick Switcher</span>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn" style="font-size: 0.8rem; padding: 0.5rem 1rem;" onclick="setCustomWallpaper('current-bing')">Current Bing</button>
+                            <button class="btn" style="font-size: 0.8rem; padding: 0.5rem 1rem;" onclick="setCustomWallpaper('aurora')">Northern Aurora</button>
+                            <button class="btn" style="font-size: 0.8rem; padding: 0.5rem 1rem;" onclick="setCustomWallpaper('tokyo')">Tokyo Night</button>
+                            <button class="btn" style="font-size: 0.8rem; padding: 0.5rem 1rem;" onclick="setCustomWallpaper('cyberpunk')">Neon Space</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="border-style: dashed;">
+                    <h4 style="font-size: 1rem; font-weight: 700; color: var(--color-etc);">Output Code Snapshot</h4>
+                    <pre style="background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; overflow-x: auto; color: var(--text-secondary);" id="code-output">
+background: rgba(10, 15, 30, 0.65);
+backdrop-filter: blur(16px);
+border: 1.5px solid var(--accent-active);</pre>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Right Side: Sticky Navigation Sidebar / Morphing Bottom Drawer -->
+        <aside>
+            <nav class="glass-card nav-card" id="navigationCard">
+                <!-- Mobile indicator bar -->
+                <div class="mobile-drag-handle"></div>
+                
+                <div class="nav-card-title">
+                    <span>Console Directory</span>
+                    <button class="drawer-close-btn" id="closeDrawerBtn" aria-label="Close menu">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 20px; height: 20px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="nav-menu">
+                    <a class="nav-link active" data-tab="home">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span>Home</span>
+                        <span class="nav-badge" style="border-color: rgba(56, 189, 248, 0.3); color: var(--color-home);">Active</span>
+                    </a>
+
+                    <a class="nav-link" data-tab="about">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        <span>About</span>
+                        <span class="nav-badge">Core</span>
+                    </a>
+
+                    <a class="nav-link" data-tab="gallery">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>Gallery</span>
+                        <span class="nav-badge" id="galleryCount">3</span>
+                    </a>
+
+                    <a class="nav-link" data-tab="etc">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>Etc.</span>
+                        <span class="nav-badge" style="border-color: rgba(16, 185, 129, 0.3); color: var(--color-etc);">Lab</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+    </div>
+
+    <!-- Mobile Navigation Summon Trigger -->
+    <button class="mobile-nav-trigger" id="mobileSummonBtn" aria-label="Open directory">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Self-Contained Diagnostic Toast Notifications -->
+    <div class="toast-container">
+        <div class="toast" id="systemToast">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: var(--accent-active);" id="toastIcon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="toastText" style="font-size: 0.9rem; font-weight: 500;">Diagnostic check complete.</span>
+        </div>
+    </div>
+
+    <!-- Footer Meta Info -->
+    <footer>
+        <p>&copy; 2026 Nexus Portal Engine. Single-Page Architecture. Engineered with vanilla technology.</p>
+    </footer>
+
+    <!-- Vanilla Client Engine -->
+    <script>
+        // Store current fetched wallpaper URL for reference
+        let activeBingUrl = "";
+
+        // Wait for DOM setup to begin initialization loops
+        document.addEventListener('DOMContentLoaded', () => {
+            initClock();
+            initRouter();
+            initMobileDrawer();
+            fetchBingWallpaper();
+        });
+
+        // 1. Digital Clock loop (Updates milliseconds and seconds)
+        function initClock() {
+            const clockEl = document.getElementById('currentTime');
+            const updateClock = () => {
+                const now = new Date();
+                const hrs = String(now.getHours()).padStart(2, '0');
+                const mins = String(now.getMinutes()).padStart(2, '0');
+                const secs = String(now.getSeconds()).padStart(2, '0');
+                clockEl.textContent = `${hrs}:${mins}:${secs}`;
+            };
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // 2. High-Performance Zero-Dependency Router
+        function initRouter() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const panels = document.querySelectorAll('.panel');
+            const root = document.documentElement;
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const targetTab = link.getAttribute('data-tab');
+                    
+                    // Update Active states on Navigation Card buttons
+                    navLinks.forEach(item => {
+                        item.classList.remove('active');
+                        const badge = item.querySelector('.nav-badge');
+                        if (badge) {
+                            if (item.getAttribute('data-tab') === 'home') {
+                                badge.textContent = 'Core';
+                                badge.style.color = '';
+                                badge.style.borderColor = '';
+                            } else if (item.getAttribute('data-tab') === 'etc') {
+                                badge.textContent = 'Lab';
+                                badge.style.color = '';
+                                badge.style.borderColor = '';
+                            } else if (item.getAttribute('data-tab') === 'gallery') {
+                                badge.textContent = '3';
+                            } else {
+                                badge.textContent = 'Core';
+                            }
+                        }
+                    });
+
+                    link.classList.add('active');
+                    const activeBadge = link.querySelector('.nav-badge');
+                    if (activeBadge) {
+                        activeBadge.textContent = 'Active';
+                        if (targetTab === 'home') {
+                            activeBadge.style.color = 'var(--color-home)';
+                            activeBadge.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+                        } else if (targetTab === 'about') {
+                            activeBadge.style.color = 'var(--color-about)';
+                            activeBadge.style.borderColor = 'rgba(236, 72, 153, 0.3)';
+                        } else if (targetTab === 'gallery') {
+                            activeBadge.style.color = 'var(--color-gallery)';
+                            activeBadge.style.borderColor = 'rgba(168, 85, 247, 0.3)';
+                        } else if (targetTab === 'etc') {
+                            activeBadge.style.color = 'var(--color-etc)';
+                            activeBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                        }
+                    }
+
+                    // Dynamically map CSS global accent variables to smooth color transitions
+                    root.style.setProperty('--accent-active', `var(--color-${targetTab})`);
+
+                    // Fade-out previous panel, instantly mount new panel with sliding entry
+                    panels.forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+
+                    const activePanel = document.getElementById(`panel-${targetTab}`);
+                    if (activePanel) {
+                        activePanel.classList.add('active');
+                    }
+
+                    // On Mobile: auto-dismiss the bottom drawer on choice selection
+                    closeMobileMenu();
+
+                    // Send Toast Update on view switches
+                    triggerNotification(`Mounted view: ${targetTab.toUpperCase()}`);
+                });
+            });
+        }
+
+        // 3. Mobile Animated Bottom Sheet Controls
+        function initMobileDrawer() {
+            const summonBtn = document.getElementById('mobileSummonBtn');
+            const closeBtn = document.getElementById('closeDrawerBtn');
+            const backdrop = document.getElementById('drawerBackdrop');
+            const navCard = document.getElementById('navigationCard');
+
+            const openMenu = () => {
+                backdrop.classList.add('active');
+                navCard.classList.add('mobile-open');
+                document.body.style.overflow = 'hidden'; // Lock background scrolling while drawer is active
+            };
+
+            summonBtn.addEventListener('click', openMenu);
+            closeBtn.addEventListener('click', closeMobileMenu);
+            backdrop.addEventListener('click', closeMobileMenu);
+
+            // Close with ESC key for quick desktop debugging
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeMobileMenu();
+            });
+        }
+
+        function closeMobileMenu() {
+            const backdrop = document.getElementById('drawerBackdrop');
+            const navCard = document.getElementById('navigationCard');
+            if (navCard.classList.contains('mobile-open')) {
+                backdrop.classList.remove('active');
+                navCard.classList.remove('mobile-open');
+                document.body.style.overflow = ''; // Restore page scrolling
+            }
+        }
+
+        // 4. Robust CORS-enabled Bing Wallpaper fetch with fallback
+        async function fetchBingWallpaper() {
+            const infoLabel = document.getElementById('wallpaperLabel');
+            const bingApiUrl = 'https://bing.biturl.top/?resolution=1920&format=json&index=0&mkt=en-US';
+            const fallbackWallpaper = 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1920&auto=format&fit=crop';
+
+            try {
+                const response = await fetch(bingApiUrl);
+                if (!response.ok) throw new Error("CORS or Endpoint unavailable");
+                
+                const data = await response.json();
+                if (data && data.url) {
+                    activeBingUrl = data.url;
+                    document.body.style.backgroundImage = `url('${data.url}')`;
+                    
+                    if (data.copyright) {
+                        infoLabel.textContent = `Bing Daily: ${data.copyright}`;
+                    } else {
+                        infoLabel.textContent = "Bing Wallpaper of the Day Loaded";
+                    }
+                } else {
+                    throw new Error("Invalid response format");
+                }
+            } catch (error) {
+                document.body.style.backgroundImage = `url('${fallbackWallpaper}')`;
+                activeBingUrl = fallbackWallpaper;
+                infoLabel.textContent = "Hub Background Active (Fallback Connected)";
+                console.warn("Bing API fetch bypassed. Secure Unsplash backup loaded.", error);
+            }
+        }
+
+        // 5. Custom Wallpaper Quick Changer (For aesthetic playground)
+        function setCustomWallpaper(theme) {
+            let selectedUrl = "";
+            let label = "";
+
+            switch (theme) {
+                case 'current-bing':
+                    selectedUrl = activeBingUrl;
+                    label = "Returned to Daily Wallpaper Engine";
+                    break;
+                case 'aurora':
+                    selectedUrl = "https://images.unsplash.com/photo-1579033461380-adb47c3eb938?q=80&w=1920&auto=format&fit=crop";
+                    label = "Aesthetic: Solar Winds Aurora";
+                    break;
+                case 'tokyo':
+                    selectedUrl = "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=1920&auto=format&fit=crop";
+                    label = "Aesthetic: Tokyo After Midnight";
+                    break;
+                case 'cyberpunk':
+                    selectedUrl = "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1920&auto=format&fit=crop";
+                    label = "Aesthetic: Cosmic Deep Nebula";
+                    break;
+            }
+
+            if (selectedUrl) {
+                document.body.style.backgroundImage = `url('${selectedUrl}')`;
+                document.getElementById('wallpaperLabel').textContent = label;
+                triggerNotification(`Background theme updated successfully`);
+            }
+        }
+
+        // 6. Live CSS Glass aesthetic variable engine
+        function updateAesthetics() {
+            const blurVal = document.getElementById('slider-blur').value;
+            const opacityVal = document.getElementById('slider-opacity').value / 100;
+
+            document.documentElement.style.setProperty('--blur-strength', `${blurVal}px`);
+            document.documentElement.style.setProperty('--bg-glass', `rgba(10, 15, 30, ${opacityVal})`);
+
+            document.getElementById('blur-val').textContent = `${blurVal}px`;
+            document.getElementById('opacity-val').textContent = `${opacityVal}`;
+
+            const codeOutput = document.getElementById('code-output');
+            codeOutput.textContent = `background: rgba(10, 15, 30, ${opacityVal});\nbackdrop-filter: blur(${blurVal}px);\nborder: 1.5px solid var(--accent-active);`;
+        }
+
+        // 7. Custom safe toast notifications
+        let toastTimeout;
+        function triggerNotification(message) {
+            const toast = document.getElementById('systemToast');
+            const text = document.getElementById('toastText');
+            
+            clearTimeout(toastTimeout);
+            text.textContent = message;
+            toast.classList.add('show');
+            
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
+
+```
