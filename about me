@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name | Personal Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* Fallback gradient if JS fails or loads slowly */
+            background-image: linear-gradient(135deg, #9333ea 0%, #3b82f6 100%);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Smooth focus transitions */
+        a, button {
+            transition: outline-offset 0.2s ease;
+        }
+        
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid rgba(255, 255, 255, 0.8);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8 font-sans transition-all duration-1000 overflow-x-hidden">
+
+    <!-- Main Container -->
+    <div class="flex flex-col justify-between w-full min-h-[92vh] max-w-6xl mx-auto space-y-6">
+
+        <!-- Header: OS Top Menu Bar -->
+        <header class="w-full bg-black/25 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 px-6 py-2 flex items-center justify-between relative z-20">
+            <div class="flex items-center space-x-2 text-white/80">
+                <span class="w-2.5 h-2.5 rounded-full bg-white/40 animate-pulse" aria-hidden="true"></span>
+                <span class="text-xs font-mono tracking-wider hidden sm:inline">SYS_ACTIVE</span>
+            </div> 
+            
+            <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-white text-center tracking-wider">
+                Your Name
+            </h1>
+            
+            <!-- Hamburger Menu -->
+            <button 
+                id="menu-button" 
+                class="w-8 h-8 cursor-pointer flex flex-col items-center justify-center space-y-1.5 z-50 bg-transparent border-none p-0"
+                aria-label="Toggle navigation menu"
+                aria-expanded="false"
+                aria-controls="menu"
+            >
+                <span class="w-7 h-0.5 bg-white/90 rounded-full transition-transform duration-300" id="bar1"></span>
+                <span class="w-7 h-0.5 bg-white/90 rounded-full transition-opacity duration-300" id="bar2"></span>
+                <span class="w-7 h-0.5 bg-white/90 rounded-full transition-transform duration-300" id="bar3"></span>
+            </button>
+        </header>
+
+        <!-- Main: OS Application Window -->
+        <main class="w-full my-auto bg-black/20 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/25 overflow-hidden relative z-10 flex flex-col">
+            
+            <!-- Window Title Bar -->
+            <div class="flex items-center justify-between bg-black/30 px-4 py-3 border-b border-white/10">
+                <div class="flex space-x-2" aria-hidden="true">
+                    <span class="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 transition-colors cursor-pointer"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 transition-colors cursor-pointer"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-500/80 hover:bg-green-500 transition-colors cursor-pointer"></span>
+                </div>
+                <span class="text-xs font-mono tracking-wider text-white/60">about_me.txt</span>
+                <div class="w-14" aria-hidden="true"></div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6 sm:p-10">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-white mb-6">About Me</h2>
+                <div class="max-h-[50vh] overflow-y-auto custom-scrollbar pr-4">
+                    <p class="text-gray-100 text-base sm:text-lg leading-relaxed">
+                        Welcome to my corner of the internet! I'm a passionate creator, developer, and lifelong learner. This is where I'll share my projects and thoughts. 
+                        <br><br>
+                        This "About Me" section is designed to be scrollable. If you add more content here, you'll see a scrollbar appear on the right, allowing visitors to read everything without making the card itself too long. This keeps the overall design clean and balanced.
+                        <br><br>
+                        Feel free to replace this text with your own biography. You can talk about your professional background, your hobbies, your skills, or whatever you'd like people to know about you. The more text you add, the more you'll see the scrolling functionality in action.
+                        <br><br>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer: OS Bottom Dock -->
+        <footer class="w-full bg-black/25 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-2.5 relative z-10">
+            <div class="flex items-center justify-center space-x-8">
+                
+                <a href="#" class="text-gray-200 hover:text-white hover:scale-110 transform transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg p-1">
+                    <span class="sr-only">GitHub</span>
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.168 6.839 9.492.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.378.203 2.398.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+                
+                <a href="#" class="text-gray-200 hover:text-white hover:scale-110 transform transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg p-1">
+                    <span class="sr-only">LinkedIn</span>
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                </a>
+
+                <a href="#" class="text-gray-200 hover:text-white hover:scale-110 transform transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg p-1">
+                    <span class="sr-only">Twitter / X</span>
+                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 300 300" aria-hidden="true">
+                        <path d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59h89.34L178.57 127.15Zm-20.75 24.23-6.6-9.46-94.2-134.8H99l76.13 109.04 6.6 9.46 98.37 140.74h-31.9l-80.3-115.02Z"/>
+                    </svg>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Clickaway Overlay -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black/30 z-30 invisible opacity-0 transition-opacity duration-300" aria-hidden="true"></div>
+    
+    <!-- Slide-out Menu -->
+    <div id="menu" class="fixed top-0 right-0 h-full w-full max-w-[14rem] bg-black/20 backdrop-blur-lg shadow-2xl border-l border-white/30 transform translate-x-full transition-transform duration-300 ease-in-out z-40" role="dialog" aria-label="Navigation menu" aria-modal="true">
+        <div class="flex flex-col h-full p-8 pt-24">
+            <nav class="flex-grow" aria-label="Main navigation">
+                <a href="#" class="block text-white text-2xl font-semibold mb-6 hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded px-2 -ml-2">Home</a>
+                <a href="#" class="block text-white text-2xl font-semibold mb-6 hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded px-2 -ml-2">Projects</a>
+                <a href="#" class="block text-white text-2xl font-semibold mb-6 hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded px-2 -ml-2">Contact</a>
+            </nav>
+            <p class="text-xs text-gray-300 text-center">
+                Copyright © 2025<br>My Business Inc.<br>All Rights Reserved.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Bing Wallpaper Logic
+            const apiUrl = 'https://bing.biturl.top/';
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.url) {
+                        document.body.style.backgroundImage = `url(${data.url})`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching Bing wallpaper:', error);
+                    // Fallback gradient already set in CSS
+                });
+
+            // Menu Toggle Logic
+            const menuButton = document.getElementById('menu-button');
+            const menu = document.getElementById('menu');
+            const menuOverlay = document.getElementById('menu-overlay');
+            const bar1 = document.getElementById('bar1');
+            const bar2 = document.getElementById('bar2');
+            const bar3 = document.getElementById('bar3');
+            let isMenuOpen = false;
+
+            function toggleMenu() {
+                isMenuOpen = !isMenuOpen;
+                
+                // Update ARIA
+                menuButton.setAttribute('aria-expanded', isMenuOpen.toString());
+
+                // Toggle menu
+                menu.classList.toggle('translate-x-full');
+
+                // Toggle overlay
+                menuOverlay.classList.toggle('invisible');
+                menuOverlay.classList.toggle('opacity-0');
+                
+                // Animate hamburger to X
+                bar1.classList.toggle('rotate-45');
+                bar1.classList.toggle('translate-y-2.5');
+                bar2.classList.toggle('opacity-0');
+                bar3.classList.toggle('-rotate-45');
+                bar3.classList.toggle('-translate-y-2.5');
+            }
+
+            // Toggle on button click
+            menuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu();
+            });
+
+            // Close on overlay click
+            menuOverlay.addEventListener('click', () => {
+                if (isMenuOpen) toggleMenu();
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isMenuOpen) {
+                    toggleMenu();
+                }
+            });
+
+            // Close when clicking outside menu (on the overlay)
+            document.addEventListener('click', (e) => {
+                if (isMenuOpen && !menu.contains(e.target) && !menuButton.contains(e.target)) {
+                    toggleMenu();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
